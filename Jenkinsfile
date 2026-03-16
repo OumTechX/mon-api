@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+    }
+    
     stages {
         
         stage('Récupérer le code') {
@@ -13,6 +17,12 @@ pipeline {
             steps {
                 echo 'Construction de l image Docker...'
                 sh 'docker build -t umissa/mon-api .'
+            }
+        }
+        
+        stage('Login Docker Hub') {
+            steps {
+                sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
             }
         }
         
@@ -29,6 +39,5 @@ pipeline {
                 sh 'kubectl apply -f webapp.yaml'
             }
         }
-        
     }
 }
