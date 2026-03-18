@@ -20,6 +20,13 @@ pipeline {
             }
         }
         
+        stage('Scanner avec Trivy') {
+            steps {
+                echo 'Scan de sécurité avec Trivy...'
+                sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL umissa/mon-api'
+            }
+        }
+        
         stage('Login Docker Hub') {
             steps {
                 sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
